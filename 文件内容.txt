@@ -1,0 +1,14 @@
+--data：数据文件
+	--depart：一级二级科室标签对应
+			department_一级科室名：对应一级科室下的二级科室与标签对应关系
+	--depart_data：科室数据
+			search_appointments_select_split_一级科室名：对应一级科室的全部数据
+			search_appointments_split_test1_一级科室名：对应一级科室筛选前的测试数据
+			search_appointments_split_test_一级科室名：对应一级科室筛选后的测试数据
+			search_appointments_split_train1_一级科室名：对应一级科室筛选前的训练数据
+			search_appointments_split_train1_一级科室名：对应一级科室筛选后的训练数据
+			word_dictionary_一级科室名：对应一级科室筛选后的词典
+	--model：分类器
+	search_appointments_split：分词后数据
+	search_appointments_select_split：添加标签后数据，并筛选二级科室名（依据department_seg.txt文件）
+	search_appointments_select_split：对前一个文件的二级科室进行频率筛选，可能导致某一级科室没有数据
