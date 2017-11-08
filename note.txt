@@ -3,7 +3,32 @@
 3. 如果不去重，word2vec替换相似词还是直接删除，会影响频率
 
 17/10/13
-word2vec 使用医学语料
-增加关键词 医学词典
+word2vec 使用医学语料 done
+分词使用 医学词典 done
+jieba分词使用cut done 效果不好
+不分词直接训练（以字为单位）done 效果不错
+关键词加权重
 语句缩短 一条拆分为几条
-不分词直接训练（以字为单位）
+
+目前最好：分次使用医学词典、使用cut_for_search，进行近义词替换。与不分次直接按字训练，效果差不多。
+
+
+
+17/10/17
+To improve the performance of fastText on small datasets, the learning rate should be increased (for example, use -lr 0.5) as well as the number of epochs (for example, use -epoch 20). You can also decrease the number of buckets (for example, use -bucket 100000), to reduce the model size. A good starting point is something like:
+
+./fasttext supervised -input TRAIN.txt -output MODEL -dim 10 -lr 0.5 -epoch 20 -bucket 100000
+样本容量小，使用更高的learning rate和epochs，减小bucket以减小模型大小。
+1.二级模型训练时，增大lr，epochs，减小bucket
+preprocessing the data ;
+
+changing the number of epochs (using the option -epoch, standard range [5 - 50]) ;
+changing the learning rate (using the option -lr, standard range [0.1 - 1.0]) ;
+using word n-grams (using the option -wordNgrams, standard range [1 - 5]).
+
+17/11/7
+目前最好：分次使用医学词典、使用cut_for_search，进行近义词替换。与不分词直接按字训练，效果差不多。
+
+几个问题：
+1.科室划分存在问题：
+    二级科室如内科中的普通内科，一级科室中的中医科、疼痛科，人工划分也会出现错误
