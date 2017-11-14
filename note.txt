@@ -34,8 +34,7 @@ using word n-grams (using the option -wordNgrams, standard range [1 - 5]).
     二级科室如内科中的普通内科，一级科室中的中医科、疼痛科，人工划分也会出现错误
 
 17/11/9
-创新点：
-word2vec相似度计算，使用关键词解决短文本分类
+创新点：word2vec相似度计算，使用关键词解决短文本分类
 fasttext作为baseline 
 自己实现RNN CNN
 贝叶斯、logistic、随机森林、词频作为特征
