@@ -25,23 +25,36 @@ def clean_str(string):
     return string.strip().lower()
 
 
-def load_data_and_labels(positive_data_file, negative_data_file):
+def load_data_and_labels(data_file):
     """
     Loads MR polarity data from files, splits the data into words and generates labels.
     Returns split sentences and labels.
     """
+
+    depart_list = []
+    des_list = []
     # Load data from files
-    positive_examples = list(open(positive_data_file, "r").readlines())
-    positive_examples = [s.strip() for s in positive_examples]
-    negative_examples = list(open(negative_data_file, "r").readlines())
-    negative_examples = [s.strip() for s in negative_examples]
+    with open(data_file, 'r', encoding='utf-8') as f:
+        for aline in f.readlines():
+            lines = aline.split("\t")
+            depart = int(lines[0])
+            des = lines[1].strip()
+            depart_list.append(depart)
+            des_list.append(des)
+
     # Split by words
-    x_text = positive_examples + negative_examples
-    x_text = [clean_str(sent) for sent in x_text]
+    x_text = des_list
+    # x_text = [clean_str(sent) for sent in x_text]
     # Generate labels
-    positive_labels = [[0, 1] for _ in positive_examples]
-    negative_labels = [[1, 0] for _ in negative_examples]
-    y = np.concatenate([positive_labels, negative_labels], 0)
+    label_num = max(depart_list)
+    sample_num = len(depart_list)
+
+    y = [None] * sample_num
+    for i in range(len(y)):
+        y[i] = [0] * (label_num + 1)
+    for index, adepart in enumerate(depart_list):
+        y[index][adepart] = 1
+
     return [x_text, y]
 
 

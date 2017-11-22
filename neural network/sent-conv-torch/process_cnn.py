@@ -28,7 +28,7 @@ with codecs.open("../../../data/search_appointments_split_raw.txt", 'rb', 'utf-8
 # 保存转换后的数据
 with codecs.open("../../../data/cnn_data/data_for_cnn.txt", 'wb', 'utf-8') as f:
     for depart, des in data:
-        aline = "{} {}\n".format(depart, des.encode('utf-8')).decode('utf-8')
+        aline = "{}\t{}\n".format(depart, des.encode('utf-8')).decode('utf-8')
         f.write(aline)
 
 split_rate = 0.2
@@ -42,10 +42,10 @@ xtrain, xtest, ytrain, ytest = train_test_split(x, y, test_size = split_rate)
 # 保存训练集测试集
 with codecs.open("../../../data/cnn_data/data_for_cnn_train.txt", 'wb', 'utf-8') as f:
     for i in range(len(xtrain)):
-        aline = "{} {}\n".format(ytrain[i], xtrain[i].encode('utf-8')).decode('utf-8')
+        aline = "{}\t{}\n".format(ytrain[i], xtrain[i].encode('utf-8')).decode('utf-8')
         f.write(aline)
 
 with codecs.open("../../../data/cnn_data/data_for_cnn_test.txt", 'wb', 'utf-8') as f:
     for i in range(len(xtest)):
-        aline = "{} {}\n".format(ytest[i], xtest[i].encode('utf-8')).decode('utf-8')
+        aline = "{}\t{}\n".format(ytest[i], xtest[i].encode('utf-8')).decode('utf-8')
         f.write(aline)
