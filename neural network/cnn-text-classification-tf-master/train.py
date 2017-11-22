@@ -45,11 +45,21 @@ print("")
 # ==================================================
 
 # Load data
+word_limit = 100
+sample_limit = 10000
+
 print("Loading data...")
 x_text, y = data_helpers.load_data_and_labels(FLAGS.data_file)
 
+np.random.seed(10)
+shuffle_indices = np.random.permutation(np.arange(len(y)))
+x_text = np.array(x_text)[shuffle_indices]
+y = np.array(y)[shuffle_indices]
+
+x_text = x_text[:sample_limit]
+y = y[:sample_limit]
 # Build vocabulary
-word_limit = 100
+
 # max_document_length = max([len(x.split(" ")) for x in x_text])
 vocab_processor = learn.preprocessing.VocabularyProcessor(word_limit)
 x = np.array(list(vocab_processor.fit_transform(x_text)))
