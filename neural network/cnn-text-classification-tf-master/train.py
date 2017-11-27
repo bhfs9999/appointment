@@ -24,10 +24,10 @@ tf.flags.DEFINE_float("dropout_keep_prob", 0.5, "Dropout keep probability (defau
 tf.flags.DEFINE_float("l2_reg_lambda", 0.0, "L2 regularization lambda (default: 0.0)")
 
 # Training parameters
-tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
+tf.flags.DEFINE_integer("batch_size", 1, "Batch Size (default: 64)")
 tf.flags.DEFINE_integer("num_epochs", 200, "Number of training epochs (default: 200)")
-tf.flags.DEFINE_integer("evaluate_every", 100, "Evaluate model on dev set after this many steps (default: 100)")
-tf.flags.DEFINE_integer("checkpoint_every", 100, "Save model after this many steps (default: 100)")
+tf.flags.DEFINE_integer("evaluate_every", 5, "Evaluate model on dev set after this many steps (default: 100)")
+tf.flags.DEFINE_integer("checkpoint_every", 5, "Save model after this many steps (default: 100)")
 tf.flags.DEFINE_integer("num_checkpoints", 5, "Number of checkpoints to store (default: 5)")
 # Misc Parameters
 tf.flags.DEFINE_boolean("allow_soft_placement", True, "Allow device soft device placement")
@@ -46,7 +46,7 @@ print("")
 
 # Load data
 word_limit = 100
-sample_limit = 10000
+sample_limit = 0
 
 print("Loading data...")
 x_text, y = data_helpers.load_data_and_labels(FLAGS.data_file)
@@ -56,8 +56,9 @@ shuffle_indices = np.random.permutation(np.arange(len(y)))
 x_text = np.array(x_text)[shuffle_indices]
 y = np.array(y)[shuffle_indices]
 
-x_text = x_text[:sample_limit]
-y = y[:sample_limit]
+if sample_limit != 0:
+    x_text = x_text[:sample_limit]
+    y = y[:sample_limit]
 # Build vocabulary
 
 # max_document_length = max([len(x.split(" ")) for x in x_text])
@@ -83,9 +84,11 @@ print("Train/Dev split: {:d}/{:d}".format(len(y_train), len(y_dev)))
 # ==================================================
 
 with tf.Graph().as_default():
+
     session_conf = tf.ConfigProto(
       allow_soft_placement=FLAGS.allow_soft_placement,
       log_device_placement=FLAGS.log_device_placement)
+    session_conf.gpu_options.allow_growth = True
     sess = tf.Session(config=session_conf)
     with sess.as_default():
         cnn = TextCNN(
