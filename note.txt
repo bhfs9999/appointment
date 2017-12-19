@@ -38,3 +38,6 @@ using word n-grams (using the option -wordNgrams, standard range [1 - 5]).
 fasttext作为baseline 
 自己实现RNN CNN
 贝叶斯、logistic、随机森林、词频作为特征
+
+17/12/11
+word2vec每行存储一个句子，防止句子超过规定长度

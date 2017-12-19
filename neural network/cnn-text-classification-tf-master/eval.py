@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import codecs
 import tensorflow as tf
 import numpy as np
 import os
@@ -8,14 +9,16 @@ import datetime
 import data_helpers
 from text_cnn import TextCNN
 from tensorflow.contrib import learn
+from collections import defaultdict
 import csv
+import pickle as pkl
+import pandas as pd
 
 # Parameters
 # ==================================================
 
 # Data Parameters
-tf.flags.DEFINE_string("positive_data_file", "./data/rt-polaritydata/rt-polarity.pos", "Data source for the positive data.")
-tf.flags.DEFINE_string("negative_data_file", "./data/rt-polaritydata/rt-polarity.neg", "Data source for the negative data.")
+tf.flags.DEFINE_string("data_file", "../../../data/cnn_data/data_for_cnn_test.txt", "Data source")
 
 # Eval Parameters
 tf.flags.DEFINE_integer("batch_size", 64, "Batch Size (default: 64)")
@@ -29,6 +32,7 @@ tf.flags.DEFINE_boolean("log_device_placement", False, "Log placement of ops on 
 
 FLAGS = tf.flags.FLAGS
 FLAGS._parse_flags()
+
 print("\nParameters:")
 for attr, value in sorted(FLAGS.__flags.items()):
     print("{}={}".format(attr.upper(), value))
@@ -36,8 +40,9 @@ print("")
 
 # CHANGE THIS: Load data. Load your own data here
 if FLAGS.eval_train:
-    x_raw, y_test = data_helpers.load_data_and_labels(FLAGS.positive_data_file, FLAGS.negative_data_file)
+    x_raw, y_test = data_helpers.load_data_and_labels(FLAGS.data_file)
     y_test = np.argmax(y_test, axis=1)
+
 else:
     x_raw = ["a masterpiece four years in the making", "everything is off."]
     y_test = [1, 0]
@@ -89,7 +94,32 @@ if y_test is not None:
 
 # Save the evaluation to a csv
 predictions_human_readable = np.column_stack((np.array(x_raw), all_predictions))
-out_path = os.path.join(FLAGS.checkpoint_dir, "..", "prediction.csv")
+
+A = defaultdict(int) #预测正确的各个类的数目
+B = defaultdict(int) #测试数据集中各个类的数目
+C = defaultdict(int) #预测结果中各个类的数目
+depart_dict = pkl.load(open('../../../data/cnn_data/cnn_department.pkl', 'rb'), encoding='utf-8')
+depart_dict = dict(zip(depart_dict.values(), depart_dict.keys()))
+
+for i in range(len(predictions_human_readable)):
+    predict = int(float(predictions_human_readable[i][1]))
+    real = int(y_test[i])
+    B[real] += 1
+    C[predict] += 1
+    if real == predict:
+        A[real] += 1
+
+df = pd.DataFrame(index = depart_dict.values(), columns=['precision','recall','f1-measure'])
+
+for key in B:
+    r = float(A[key]) / float(B[key])
+    p = float(A[key]) / float(C[key])
+    f1 = p * r * 2 / (p + r)
+    print(" %-16s\t p:%f\t r:%f\t f:%f\t" % (depart_dict[key], p, r, f1))
+    df.loc[depart_dict[key]] = [p, r, f1]
+
+df.to_csv("result_using_cnn.csv", encoding = "utf-8")
+
+out_path = os.path.join(FLAGS.checkpoint_dir, "..", "result_using_cnn.csv")
 print("Saving evaluation to {0}".format(out_path))
-with open(out_path, 'w') as f:
-    csv.writer(f).writerows(predictions_human_readable)
+df.to_csv(out_path, encoding = "utf-8")
