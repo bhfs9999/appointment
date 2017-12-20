@@ -159,6 +159,7 @@ with tf.Graph().as_default():
 
         # Initialize all variables
         sess.run(tf.global_variables_initializer())
+        
         if FLAGS.enable_word_embeddings and cfg['word_embeddings']['default'] is not None:
             vocabulary = vocab_processor.vocabulary_
             initW = None
